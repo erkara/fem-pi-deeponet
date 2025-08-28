@@ -31,7 +31,7 @@ def main():
         'space_domain': ((0, 10),
                          (0, 10)),
         'time_domain': (0, 500),       # time domain
-        'N': 1000,                     # number of input functions sampled
+        'N': 2000,                     # number of input functions sampled
         'm': 30,                       # number of input function sensors--> m*m
         'P_bcs': 100,                  # number of BC collocation points
         'P_ics': 5,                    # number of IC collocation points
@@ -65,7 +65,7 @@ def main():
     }
     model_config = {'branch_layers': [problem_config['m']**2, 128, 128, 128, 128],
                     'trunk_layers': [problem_config['DIM'], 128, 128, 128, 128],
-                    'num_epoch': 200000,       # number of epochs
+                    'num_epoch': 300000,       # number of epochs
                      # lr(n) = initial_lr * (decay_rate)^(n/decay_steps)
                     'initial_lr': 1e-3,
                     'decay_steps': 10000,
