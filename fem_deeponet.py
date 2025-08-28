@@ -31,7 +31,7 @@ def main():
         'space_domain': ((0, 10),
                          (0, 10)),
         'time_domain': (0, 500),       # time domain
-        'N': 2000,                     # number of input functions sampled
+        'N': 1000,                     # number of input functions sampled
         'm': 30,                       # number of input function sensors--> m*m
         'P_bcs': 100,                  # number of BC collocation points
         'P_ics': 5,                    # number of IC collocation points
@@ -39,14 +39,14 @@ def main():
         'n_theta': 30,                 # number of angular PDE collocation
         'n_random': 300,               # number of random PDE collocation points
         'gauss_mode': {
-            'type': 'fixed',             # 'fixed' or 'variable'
-            'value': 1                   # number of sources
+            'type': 'fixed',           # 'fixed': same number of sources per data or 'variable'
+            'value': 1                 # number of sources
         },
-        'center_range': ((4.75, 4.75),   # center range of Gaussian
-                         (5.53, 5.53)),
+        'center_range': ((3, 7),        # center range of Gaussian
+                         (3, 7)),
         'sigma_range': (0.25,0.60),      # range of Gaussian width
 
-        'fixed_center': False,           # fixed centers or sample
+        'fixed_center': False,           # fixed centers or sample different centers per data
         'std_factor': 3,                 # radius factor around source, std_factor * sigma
         'percentage_data_to_load': 1.,   # keep for testing
         'precision': 'float16',          # precision of train data to save-up space
@@ -65,7 +65,7 @@ def main():
     }
     model_config = {'branch_layers': [problem_config['m']**2, 128, 128, 128, 128],
                     'trunk_layers': [problem_config['DIM'], 128, 128, 128, 128],
-                    'num_epoch': 300000,       # number of epochs
+                    'num_epoch': 200000,       # number of epochs
                      # lr(n) = initial_lr * (decay_rate)^(n/decay_steps)
                     'initial_lr': 1e-3,
                     'decay_steps': 10000,

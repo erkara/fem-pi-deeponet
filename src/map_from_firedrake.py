@@ -290,12 +290,10 @@ def solve_convection_diffusion(gauss_params, problem_config,show_progress=False)
     # store the solution at specified output times
     c_solutions = []
     current_time = dt
-
-    # Perform time-stepping, starting from the first step
     step_range = trange(1, num_steps + 1) if show_progress else range(1, num_steps + 1)
 
     for step in step_range:
-        # Update the time for the current step
+        # Update time
         t.assign(current_time)
         solve(F == 0, c, solver_parameters=parameters)
 
@@ -303,7 +301,6 @@ def solve_convection_diffusion(gauss_params, problem_config,show_progress=False)
         if step % step_interval == 0:
             snapshot = c.copy(deepcopy=True)
             c_solutions.append(snapshot)
-            # I confirm that single "testing_rng" works great!
 
         #Write VTK output for visualization
         c.rename('concentration')
@@ -398,7 +395,7 @@ def map_concentration_fem(gauss_params, problem_config, xr, yr):
 
     # Iterate over each time step (Nt solutions in c_solutions)
     for step in range(Nt):
-        # get the current solution
+        # current solution
         c = c_solutions[step]
         c_temp.project(c)
         c_values = c_temp.dat.data_ro  # (M,)
