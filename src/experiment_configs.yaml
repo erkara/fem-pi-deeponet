@@ -1,0 +1,89 @@
+experiment_families:
+  single_source:
+    problem_config:
+      gauss_mode: {type: fixed, value: 1}
+      std_factor: 3
+      sigma_range: [0.25, 0.60]
+    model_config:
+      branch_layers: [900, 128, 128, 128, 128]
+      trunk_layers: [3, 128, 128, 128, 128]
+
+  double_source_random:
+    problem_config:
+      gauss_mode: {type: variable, value: 2}
+      std_factor: 3
+      sigma_range: [0.45,0.45]
+    model_config:
+      branch_layers: [900, 128, 128, 128, 128]
+      trunk_layers: [3, 128, 128, 128, 128]
+
+  triple_source:
+    problem_config:
+      gauss_mode: {type: fixed, value: 3}
+      std_factor: 3
+      sigma_range: [0.45,0.45]
+    model_config:
+      branch_layers: [900, 256, 256, 256, 256]
+      trunk_layers: [3, 256, 256, 256, 256]
+      num_epoch: 700000
+
+  triple_source_fixed_center:
+    problem_config:
+      gauss_mode: {type: fixed, value: 3}
+      std_factor: 3
+      sigma_range: [0.25, 0.6]
+      fixed_center : true
+    model_config:
+      branch_layers: [900, 256, 256, 256, 256]
+      trunk_layers: [3, 256, 256, 256, 256]
+      num_epoch: 700000
+
+experiment_variants:
+  single_source_T50:
+    family: single_source
+    time_domain: [0, 50]
+
+  single_source_T250:
+    family: single_source
+    time_domain: [0, 250]
+
+  single_source_T500:
+    family: single_source
+    time_domain: [0, 500]
+
+  double_source_random_T50:
+    family: double_source_random
+    time_domain: [0, 50]
+
+  double_source_random_T250:
+    family: double_source_random
+    time_domain: [0, 250]
+
+  double_source_random_T500:
+    family: double_source_random
+    time_domain: [0, 500]
+
+  triple_source_T50:
+    family: triple_source
+    time_domain: [0, 50]
+
+  triple_source_T250:
+    family: triple_source
+    time_domain: [0, 250]
+
+  triple_source_T500:
+    family: triple_source
+    time_domain: [0, 500]
+
+  triple_source_fixed_center_T50:
+    family: triple_source_fixed_center
+    time_domain: [0, 50]
+
+  triple_source_fixed_center_T250:
+    family: triple_source_fixed_center
+    time_domain: [0, 250]
+
+  triple_source_fixed_center_T500:
+    family: triple_source_fixed_center
+    time_domain: [0, 500]
+
