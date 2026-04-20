@@ -101,8 +101,8 @@ def plot_losses(problem_config,clip_after=10000,l2_threshold=0.3):
 def save_vtk_file(filename, x_flat, y_flat, values, value_name="s"):
     """
     Use vtk format to output to Paraview, then apply Delunay2D to
-    create the mesh on it. This is pretty robust and works well for
-    our case
+    create the mesh on it. This is pretty robust and works well. Native matplotlib cannot
+    handle triangulation on random grid properly.
     """
     # Stack x, y, and z (0 for 2D) into a points array, no support for fp16
     points = npo.column_stack((x_flat, y_flat, npo.zeros_like(x_flat))).astype(npo.float32)
@@ -203,21 +203,24 @@ def plot_centerline_profiles(y_test, s_test, s_pred, gauss_params, problem_confi
     plt.savefig(f"{paths['train_results_dir']}/centerline_profiles.png")
     plt.close(fig)
 
+
 def test_model(testing_rng, problem_config, model_config):
     """
-    test the trained model for N_test independent data
+    Test the trained model on N_test independent samples and collect
+    systematic error statistics for downstream tasks
     """
     model = PI_DeepONet(model_config, problem_config)
     params = load_model(model, problem_config)
+
     N_test = problem_config['N_test']
     Nt = problem_config['Nt']
     t_min, t_max = problem_config['time_domain']
 
-    total_rel_l2 = 0
-    timewise_l2_numerators = npo.zeros(Nt)
-    timewise_l2_denominators = npo.zeros(Nt)
-
     rngs = [npo.random.default_rng(testing_rng.integers(1e9)) for _ in range(N_test)]
+
+    full_errors = []
+    final_errors = []
+    per_sample_time_errors = []
 
     for i in tqdm(range(N_test), desc="testing"):
         u_test, y_test, s_test, gauss_params = generate_one_test_data(rngs[i], problem_config)
@@ -227,37 +230,62 @@ def test_model(testing_rng, problem_config, model_config):
         s_test = s_test.reshape(Q, Nt)
         s_pred = s_pred.reshape(Q, Nt)
 
-        # Full error for this sample
+        # ---- full spatiotemporal relative error for this sample ----
         err_full = npo.linalg.norm(s_test - s_pred) / npo.linalg.norm(s_test)
-        total_rel_l2 += err_full
+        full_errors.append(float(err_full))
 
+        # ---- per-time relative errors for this sample ----
+        sample_time_errors = []
         for t in range(Nt):
-            diff = s_test[:, t] - s_pred[:, t]
-            timewise_l2_numerators[t] += npo.linalg.norm(diff)**2
-            timewise_l2_denominators[t] += npo.linalg.norm(s_test[:, t])**2
+            denom = npo.linalg.norm(s_test[:, t])
+            if denom == 0:
+                err_t = npo.nan
+            else:
+                err_t = npo.linalg.norm(s_test[:, t] - s_pred[:, t]) / denom
+            sample_time_errors.append(float(err_t))
 
-    # Final mean errors
-    mean_relative_l2 = total_rel_l2 / N_test
-    per_time_rel_l2_array = npo.sqrt(timewise_l2_numerators / timewise_l2_denominators)
+        per_sample_time_errors.append(sample_time_errors)
 
-    # Map to time -> rel_l2 dict
+        # ---- final-time relative error for this sample ----
+        final_errors.append(float(sample_time_errors[-1]))
+
+    full_errors = npo.array(full_errors)
+    final_errors = npo.array(final_errors)
+    per_sample_time_errors = npo.array(per_sample_time_errors)   # shape: (N_test, Nt)
+
+    # time grid
     t_grid = npo.linspace(t_min, t_max, Nt)
-    per_time_rel_l2_by_time = {
-        float(round(t, 0)): float(round(100 * err, 6))
-        for t, err in zip(t_grid[1:], per_time_rel_l2_array[1:])   # first is IC, not reliable.
+
+    # mean error-vs-time over test samples
+    mean_time_errors = npo.nanmean(per_sample_time_errors, axis=0)
+
+    # summary stats
+    results = {
+        "mean_relative_l2": round(float(100 * npo.mean(full_errors)), 6),
+        "final_time_stats": {
+            "mean": round(float(100 * npo.mean(final_errors)), 6),
+            "std": round(float(100 * npo.std(final_errors)), 6),
+            "min": round(float(100 * npo.min(final_errors)), 6),
+            "max": round(float(100 * npo.max(final_errors)), 6),
+        },
+        "per_time_relative_l2": {
+            float(round(t, 0)): round(float(100 * err), 6)
+            for t, err in zip(t_grid[1:], mean_time_errors[1:])   # skip IC
+        },
+        "full_errors_percent": [round(float(100 * x), 6) for x in full_errors],
+        "final_errors_percent": [round(float(100 * x), 6) for x in final_errors],
     }
 
-    # save for the record
+    # save for record
     paths = get_paths(problem_config)
     log_file = f"{paths['train_results_dir']}/relative_l2_testing_logs.json"
-    results = {
-        'mean_relative_l2': round(float(100 * mean_relative_l2),6),
-        'per_time_relative_l2': per_time_rel_l2_by_time
-    }
-    with open(log_file, 'w') as f:
+    with open(log_file, "w") as f:
         json.dump(results, f, indent=2)
 
-    return mean_relative_l2, per_time_rel_l2_by_time
+    return results
+
+
+
 
 def compare_speed(testing_rng, problem_config, model_config):
     """
