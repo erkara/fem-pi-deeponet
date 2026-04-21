@@ -30,7 +30,7 @@ Here is a general description of the codebase
 
 `fem_deeponet.py`: driver code including all PDE and PI-DeepONet parameters. When run successfully, it creates the 
 following folder structure. Major training results are written to `train_results`. To further compare FEM and PI-DeepOnet 
-outcomes, you can view *vtk files in `vtk_results` in post-processing tool, e.g. Paraview. If you do so, make sure to perform
+outcomes, you can view *vtk files in `vtk_results` with a post-processing tool, e.g. Paraview. If you do so, make sure to perform
 `Delunay2D` after loading *vtk data so that all downstream analysis remains stable.
 
     ├── artifacts
@@ -64,5 +64,5 @@ python3 fem_deeponet.py
 ## Future Plan
 
 We plan to add tutorials on building custom PI-DeepONet frameworks for common PDE types, with FEM fully integrated. Please
-feel free to reach out to me at [erdi_kara88@hotmail.com](erdi_kara88@hotmail.com) for any questions/suggestions, cheers!g
+feel free to reach out to me at [erdi_kara88@hotmail.com](erdi_kara88@hotmail.com) for any questions/suggestions, cheers!
 
