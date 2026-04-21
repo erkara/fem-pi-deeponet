@@ -55,7 +55,7 @@ def main():
         'N_test': 30,                    # number of test data to be generated
          #======PDE Parameters=======
         'save_pde_simulation': False,
-        'K': 10 * 1e-9,                  # intrinsic permeability--> [mm^2]
+        'K': 1e-9,                       # intrinsic permeability--> [mm^2]
         'mu_w': 9e-4,                    # viscosity of water --> [Pa * s]
         'alpha': 1e-2,                   # sink term --> [mm^2 / (N * s)]
         'D': 4e-6,                       # diffusion coefficient--> [mm^2 / s]

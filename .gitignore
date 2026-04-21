@@ -1,10 +1,15 @@
-# custom ignores
-/artifacts
+##---- custom ignores ------
+# original data, review artifacts etc.
+/artifacts_review_v1
+/artifacts_original
 /cloud_stuff
 /data_analysis
 build_push_docker.sh
 Dockerfile.femdeeponet
+review_experiments.py
 
+
+##===========================
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

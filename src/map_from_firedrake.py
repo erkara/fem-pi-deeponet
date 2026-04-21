@@ -339,6 +339,8 @@ def solve_cd_for_speed_test(gauss_params, problem_config):
 
     D = Constant(problem_config['D'])
     u, mesh = solve_darcy(problem_config, gauss_params)
+
+    # measure the time from this point on
     start_time = time.time()
     C = FunctionSpace(mesh, "CG", 1)
     w = TestFunction(C)
