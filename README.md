@@ -64,5 +64,5 @@ python3 fem_deeponet.py
 ## Future Plan
 
 We plan to add tutorials on building custom PI-DeepONet frameworks for common PDE types, with FEM fully integrated. Please
-feel free to reach out to me at [erdi_kara88@hotmail.com](erdi_kara88@hotmail.com) for any questions/suggestions, cheers!
+feel free to reach out to me at [erdi_kara88@hotmail.com](erdi_kara88@hotmail.com) for any questions/suggestions, cheers!g
 
