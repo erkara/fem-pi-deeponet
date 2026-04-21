@@ -23,7 +23,7 @@ concentration profile in the transport PDE. Refer to the actual manuscript for t
 proposed pipeline.
 
 <p align="center">
-  <img src="assets/flow.png" alt="Workflow Diagram" width="600"/>
+  <img src="assets/flow.png" alt="Workflow Diagram" width="800"/>
 </p>
 
 Here is a general description of the codebase
